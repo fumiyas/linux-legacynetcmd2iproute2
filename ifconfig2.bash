@@ -19,7 +19,8 @@ pdie() {
 }
 
 run() {
-  echo "$@"
+  [[ -z ${exec_only_flag-} ]] && echo "$@"
+  [[ -n ${exec_flag-} ]] && { "$@" || exit $?; }
 }
 
 require_value()
@@ -27,7 +28,7 @@ require_value()
   local name="$1"; shift
 
   if [[ $# -eq 0 ]]; then
-    pdie "$name: requires value"
+    pdie "$name: Requires value"
   fi
 
   local value="$1"; shift
@@ -36,7 +37,7 @@ require_value()
     if [[ $value =~ $1 ]]; then
       : OK
     else
-      pdie "$name: invalid value: $value"
+      pdie "$name: Invalid value: $value"
     fi
   fi
 }
@@ -45,9 +46,15 @@ require_value()
 
 while [[ $# -gt 0 ]]; do
   case "${1-}" in
+  --x)
+    exec_flag="set"
+    ;;
+  --xx)
+    exec_flag="set"
+    exec_only_flag="set"
+    ;;
   -a|-s|-v)
     ## Ignore
-    shift
     ;;
   --)
     shift
@@ -60,17 +67,18 @@ while [[ $# -gt 0 ]]; do
     break
     ;;
   esac
+  shift
 done
 
 if [[ $# -eq 0 ]]; then
-  exec ip addr
+  run ip address
   exit 1
 fi
 
 if="${1-}"; shift
 
 if [[ $# -eq 0 ]]; then
-  run ip addr show dev "$if"
+  run ip address show dev "$if"
   exit $?
 fi
 
