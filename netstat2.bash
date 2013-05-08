@@ -75,7 +75,7 @@ while [[ $# -gt 0 ]]; do
     exec_flag="set"
     exec_only_flag="set"
     ;;
-  -a|--all|-e|--extended|-o|-p)
+  -a|--all|-e|--extended|-o|-p|-4|-6)
     ss_opts[${#ss_opts[@]}]="$opt"
     ;;
   -n|--numeric)
