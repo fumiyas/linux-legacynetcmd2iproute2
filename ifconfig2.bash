@@ -23,6 +23,11 @@ run() {
   [[ -n ${exec_flag-} ]] && { "$@" || exit $?; }
 }
 
+run_ip()
+{
+  run ip ${resolve_flag:+-r} ${af:+-f "$af"} "$@"
+}
+
 require_value()
 {
   local name="$1"; shift
@@ -43,6 +48,8 @@ require_value()
 }
 
 ## ======================================================================
+
+resolve_flag=""
 
 while [[ $# -gt 0 ]]; do
   case "${1-}" in
@@ -96,22 +103,22 @@ while [[ $# -gt 0 ]]; do
   cmd="$1"; shift
   case "$cmd" in
   up)
-    run ip ${af:+-f "$af"} link set up dev "$if"
+    run_ip link set up dev "$if"
     ;;
   down)
-    run ip ${af:+-f "$af"} link set down dev "$if"
+    run_ip link set down dev "$if"
     ;;
   arp|dynamic|multicast|promisc|trailers)
-    run ip ${af:+-f "$af"} link set "$cmd" on dev "$if"
+    run_ip link set "$cmd" on dev "$if"
     ;;
   -arp|-dynamic|-multicast|-promisc|-trailers)
-    run ip ${af:+-f "$af"} link set "${cmd#-}" off dev "$if"
+    run_ip link set "${cmd#-}" off dev "$if"
     ;;
   allmulti)
-    run ip ${af:+-f "$af"} link set allmulticast on dev "$if"
+    run_ip link set allmulticast on dev "$if"
     ;;
   -allmulti)
-    run ip ${af:+-f "$af"} link set allmulticast off dev "$if"
+    run_ip link set allmulticast off dev "$if"
     ;;
   pointopoint|-pointopoint|dstaddr|tunnel|outfill|keepalive|metric)
     ## FIXME: ip route?
@@ -133,7 +140,7 @@ while [[ $# -gt 0 ]]; do
   del)
     require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} address del "$arg" dev "$if"
+    run_ip address del "$arg" dev "$if"
     ;;
   netmask)
     require_value "$cmd" ${1+"$1"}
@@ -143,17 +150,17 @@ while [[ $# -gt 0 ]]; do
   broadcast)
     require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} link set broadcast "$arg" dev "$if"
+    run_ip link set broadcast "$arg" dev "$if"
     ;;
   mtu)
     require_value "$cmd" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} link set mtu "$arg" dev "$if"
+    run_ip link set mtu "$arg" dev "$if"
     ;;
   txqueuelen)
     require_value "$cmd" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} link set rxqueuelen "$arg" dev "$if"
+    run_ip link set rxqueuelen "$arg" dev "$if"
     ;;
   hw)
     require_value "$cmd" ${1+"$1"}
@@ -163,7 +170,7 @@ while [[ $# -gt 0 ]]; do
     fi
     require_value "$cmd: $arg" ${1+"$1"}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} link set address "$arg" dev "$if"
+    run_ip link set address "$arg" dev "$if"
     ;;
   *)
     ## hostname?
@@ -174,9 +181,9 @@ done
 
 if [[ -n ${addr-} ]]; then
   if [[ -z ${netmask-} ]]; then
-    run ip ${af:+-f "$af"} address add "$addr" dev "$if"
+    run_ip address add "$addr" dev "$if"
   else
-    run ip ${af:+-f "$af"} address add "${addr%%/*}/$netmask" dev "$if"
+    run_ip address add "${addr%%/*}/$netmask" dev "$if"
   fi
 fi
 

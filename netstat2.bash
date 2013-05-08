@@ -23,6 +23,11 @@ run() {
   [[ -n ${exec_flag-} ]] && { "$@" || exit $?; }
 }
 
+run_ss()
+{
+  run ss ${resolve_flag+-r} "$@"
+}
+
 require_value()
 {
   local name="$1"; shift
@@ -44,7 +49,7 @@ require_value()
 
 ## ======================================================================
 
-ss_resolve_flag="set"
+resolve_flag="set"
 ss_opts=()
 
 while [[ $# -gt 0 ]]; do
@@ -74,7 +79,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   -n|--numeric)
     ss_opts[${#ss_opts[@]}]="$opt"
-    unset ss_resolve_flag
+    unset resolve_flag
     ;;
   --timers)
     ss_opts[${#ss_opts[@]}]="--options"
@@ -129,7 +134,5 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-ss_opts=(${ss_resolve_flag+--resolve} ${ss_opts+"${ss_opts[@]}"})
-
-run ss "${ss_opts[@]}"
+run_ss ${ss_opts+"${ss_opts[@]}"}
 
