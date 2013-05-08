@@ -50,6 +50,7 @@ require_value()
 ## ======================================================================
 
 resolve_flag="set"
+continuous_flag=""
 ss_opts=()
 
 while [[ $# -gt 0 ]]; do
@@ -110,7 +111,7 @@ while [[ $# -gt 0 ]]; do
     ss_opts[${#ss_opts[@]}]="-6"
     ;;
   -c|--continuous)
-    pdie "$opt: Not supported yet"
+    continuous_flag="set"
     ;;
   -r|--route|-F|-C|-g|--groups|-i|--interfaces|-M|--masquerade|-s|--statistics)
     pdie "$opt: Not supported yet"
@@ -133,6 +134,15 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+
+if [[ -n ${continuous_flag-} ]] && [[ -n ${exec_flag-} ]]; then
+  while :; do
+    run_ss ${ss_opts+"${ss_opts[@]}"}
+    exec_only_flag="set"
+    sleep 1
+  done
+  exit 0
+fi
 
 run_ss ${ss_opts+"${ss_opts[@]}"}
 
