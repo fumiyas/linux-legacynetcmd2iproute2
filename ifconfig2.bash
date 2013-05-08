@@ -41,6 +41,10 @@ require_value()
   fi
 }
 
+## ======================================================================
+
+## FIXME: Ignore -a, -s and -v option
+
 if [[ $# == 0 ]]; then
   exec ip addr
   exit 1
@@ -54,56 +58,85 @@ if [[ $# == 0 ]]; then
 fi
 
 case "$1" in
-  inet|inet6)
-    af="$1"
-    shift
-    ;;
+inet|inet6)
+  af="$1"
+  shift
+  ;;
+unix|ax25|netrom|rose|ipx|ddp|ec|ashx25)
+  pdie "$1: Not supported"
+  ;;
 esac
 
 while [[ $# > 0 ]]; do
-  arg="$1"; shift
-  case "$arg" in
+  cmd="$1"; shift
+  case "$cmd" in
   up)
     run ip ${af:+-f "$af"} link set up dev "$if"
     ;;
   down)
     run ip ${af:+-f "$af"} link set down dev "$if"
     ;;
-  arp|promisc)
-    run ip ${af:+-f "$af"} link set "$arg" on dev "$if"
+  arp|dynamic|multicast|promisc|trailers|txqueuelen)
+    run ip ${af:+-f "$af"} link set "$cmd" on dev "$if"
     ;;
-  -arp|-promisc)
-    run ip ${af:+-f "$af"} link set "${arg#-}" off dev "$if"
+  -arp|-dynamic|-multicast|-promisc|-trailers)
+    run ip ${af:+-f "$af"} link set "${cmd#-}" off dev "$if"
     ;;
-  *.*.*.*|*::*)
-    addr="$arg"
-    run ip ${af:+-f "$af"} address add "$arg" dev "$if"
+  allmulti)
+    run ip ${af:+-f "$af"} link set allmulticast on dev "$if"
+    ;;
+  -allmulti)
+    run ip ${af:+-f "$af"} link set allmulticast off dev "$if"
+    ;;
+  pointopoint|-pointopoint|dstaddr|tunnel|outfill|keepalive|metric)
+    ## FIXME: ip route?
+    pdie "$cmd: Not supported yet"
+    ;;
+  mem_start|io_addr|irq|media)
+    ## FIXME: ethtool
+    pdie "$cmd: Not supported yet"
     ;;
   add|address)
-    require_value "$arg" ${1+"$1"}
+    require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
-    addr="$arg"
     run ip ${af:+-f "$af"} address add "$arg" dev "$if"
+    addr="$arg"
     ;;
   del)
-    require_value "$arg" ${1+"$1"}
+    require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
     run ip ${af:+-f "$af"} address del "$arg" dev "$if"
     ;;
   netmask)
-    require_value "$arg" ${1+"$1"}
+    require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
     run ip ${af:+-f "$af"} address add "${addr%%/*}/$arg" dev "$if"
     ;;
   broadcast)
-    require_value "$arg" ${1+"$1"}
+    require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
     run ip ${af:+-f "$af"} link set broadcast "$arg" dev "$if"
     ;;
   mtu)
-    require_value "$arg" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
+    require_value "$cmd" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
     arg="$1"; shift
     run ip ${af:+-f "$af"} link set mtu "$arg" dev "$if"
+    ;;
+  hw)
+    require_value "$cmd" ${1+"$1"}
+    arg="$1"; shift
+    if [[ $cmd != ether ]]; then
+      pdie "$cmd: $arg: Not supported"
+    fi
+    require_value "$cmd: $arg" ${1+"$1"}
+    arg="$1"; shift
+    run ip ${af:+-f "$af"} link set address "$arg" dev "$if"
+    ;;
+  *)
+    ## IPv4, IPv6 address or hostname
+    arg="$cmd"
+    run ip ${af:+-f "$af"} address add "$arg" dev "$if"
+    addr="$arg"
     ;;
   esac
 done
