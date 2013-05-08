@@ -61,6 +61,15 @@ run_cmd="run_ss"
 ss_opts=()
 common_opts=()
 
+case "${0%.bash}" in
+*2)
+  ;;
+*)
+  exec_flag="set"
+  exec_only_flag="set"
+  ;;
+esac
+
 while [[ $# -gt 0 ]]; do
   opt="$1"; shift
 

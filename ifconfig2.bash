@@ -51,6 +51,15 @@ require_value()
 
 resolve_flag=""
 
+case "${0%.bash}" in
+*2)
+  ;;
+*)
+  exec_flag="set"
+  exec_only_flag="set"
+  ;;
+esac
+
 while [[ $# -gt 0 ]]; do
   case "${1-}" in
   --x)
