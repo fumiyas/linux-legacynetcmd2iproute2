@@ -110,13 +110,16 @@ while [[ $# -gt 0 ]]; do
     pdie "$cmd: Not supported yet"
     ;;
   mem_start|io_addr|irq|media)
-    ## FIXME: ethtool
+    ## FIXME: ethtool?
     pdie "$cmd: Not supported yet"
+    ;;
+  *.*.*.*|*::*)
+    arg="$cmd"
+    addr="$arg"
     ;;
   add|address)
     require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} address add "$arg" dev "$if"
     addr="$arg"
     ;;
   del)
@@ -127,7 +130,7 @@ while [[ $# -gt 0 ]]; do
   netmask)
     require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
-    run ip ${af:+-f "$af"} address add "${addr%%/*}/$arg" dev "$if"
+    netmask="$arg"
     ;;
   broadcast)
     require_value "$cmd" ${1+"$1"}
@@ -150,11 +153,17 @@ while [[ $# -gt 0 ]]; do
     run ip ${af:+-f "$af"} link set address "$arg" dev "$if"
     ;;
   *)
-    ## IPv4, IPv6 address or hostname
-    arg="$cmd"
-    run ip ${af:+-f "$af"} address add "$arg" dev "$if"
-    addr="$arg"
+    ## hostname?
+    pdie "$cmd: Not supported"
     ;;
   esac
 done
+
+if [[ -n ${addr-} ]]; then
+  if [[ -z ${netmask-} ]]; then
+    run ip ${af:+-f "$af"} address add "$addr" dev "$if"
+  else
+    run ip ${af:+-f "$af"} address add "${addr%%/*}/$netmask" dev "$if"
+  fi
+fi
 
