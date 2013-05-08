@@ -53,50 +53,57 @@ if [[ $# == 0 ]]; then
   exit $?
 fi
 
+case "$1" in
+  inet|inet6)
+    af="$1"
+    shift
+    ;;
+esac
+
 while [[ $# > 0 ]]; do
   arg="$1"; shift
   case "$arg" in
   up)
-    run ip link set up dev "$if"
+    run ip ${af:+-f "$af"} link set up dev "$if"
     ;;
   down)
-    run ip link set down dev "$if"
+    run ip ${af:+-f "$af"} link set down dev "$if"
     ;;
   arp|promisc)
-    run ip link set "$arg" on dev "$if"
+    run ip ${af:+-f "$af"} link set "$arg" on dev "$if"
     ;;
   -arp|-promisc)
-    run ip link set "${arg#-}" off dev "$if"
+    run ip ${af:+-f "$af"} link set "${arg#-}" off dev "$if"
     ;;
   *.*.*.*|*::*)
     addr="$arg"
-    run ip address add "$arg" dev "$if"
+    run ip ${af:+-f "$af"} address add "$arg" dev "$if"
     ;;
   add|address)
     require_value "$arg" ${1+"$1"}
     arg="$1"; shift
     addr="$arg"
-    run ip address add "$arg" dev "$if"
+    run ip ${af:+-f "$af"} address add "$arg" dev "$if"
     ;;
   del)
     require_value "$arg" ${1+"$1"}
     arg="$1"; shift
-    run ip address del "$arg" dev "$if"
+    run ip ${af:+-f "$af"} address del "$arg" dev "$if"
     ;;
   netmask)
     require_value "$arg" ${1+"$1"}
     arg="$1"; shift
-    run ip address add "${addr%%/*}/$arg" dev "$if"
+    run ip ${af:+-f "$af"} address add "${addr%%/*}/$arg" dev "$if"
     ;;
   broadcast)
     require_value "$arg" ${1+"$1"}
     arg="$1"; shift
-    run ip link set broadcast "$arg" dev "$if"
+    run ip ${af:+-f "$af"} link set broadcast "$arg" dev "$if"
     ;;
   mtu)
     require_value "$arg" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
     arg="$1"; shift
-    run ip link set mtu "$arg" dev "$if"
+    run ip ${af:+-f "$af"} link set mtu "$arg" dev "$if"
     ;;
   esac
 done
