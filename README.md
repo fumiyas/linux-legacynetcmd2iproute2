@@ -24,6 +24,11 @@ Run iproute2 command-line:
     $ ./ifconfig2.bash --xx <ifconfig(8)'s argument>
     $ ./netstat2.bash --xx <netstat(8)'s arguments>
 
+TODO
+----------------------------------------------------------------------
+
+  * Add arp2.bash and route2.bash
+
 References
 ----------------------------------------------------------------------
 
