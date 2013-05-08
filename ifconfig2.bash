@@ -93,7 +93,7 @@ while [[ $# -gt 0 ]]; do
   down)
     run ip ${af:+-f "$af"} link set down dev "$if"
     ;;
-  arp|dynamic|multicast|promisc|trailers|txqueuelen)
+  arp|dynamic|multicast|promisc|trailers)
     run ip ${af:+-f "$af"} link set "$cmd" on dev "$if"
     ;;
   -arp|-dynamic|-multicast|-promisc|-trailers)
@@ -141,6 +141,11 @@ while [[ $# -gt 0 ]]; do
     require_value "$cmd" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
     arg="$1"; shift
     run ip ${af:+-f "$af"} link set mtu "$arg" dev "$if"
+    ;;
+  txqueuelen)
+    require_value "$cmd" ${1+"$1"} #${1+'^[1-9][0-9]*$'}
+    arg="$1"; shift
+    run ip ${af:+-f "$af"} link set rxqueuelen "$arg" dev "$if"
     ;;
   hw)
     require_value "$cmd" ${1+"$1"}
