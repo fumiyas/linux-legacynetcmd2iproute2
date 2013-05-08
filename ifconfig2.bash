@@ -43,16 +43,33 @@ require_value()
 
 ## ======================================================================
 
-## FIXME: Ignore -a, -s and -v option
+while [[ $# -gt 0 ]]; do
+  case "${1-}" in
+  -a|-s|-v)
+    ## Ignore
+    shift
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    pdie "Unknown option: $1"
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
 
-if [[ $# == 0 ]]; then
+if [[ $# -eq 0 ]]; then
   exec ip addr
   exit 1
 fi
 
 if="${1-}"; shift
 
-if [[ $# == 0 ]]; then
+if [[ $# -eq 0 ]]; then
   run ip addr show dev "$if"
   exit $?
 fi
@@ -67,7 +84,7 @@ unix|ax25|netrom|rose|ipx|ddp|ec|ashx25)
   ;;
 esac
 
-while [[ $# > 0 ]]; do
+while [[ $# -gt 0 ]]; do
   cmd="$1"; shift
   case "$cmd" in
   up)
