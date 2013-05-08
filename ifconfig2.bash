@@ -88,7 +88,7 @@ done
 
 if [[ $# -eq 0 ]]; then
   run ip address
-  exit 1
+  exit $?
 fi
 
 if="${1-}"; shift
