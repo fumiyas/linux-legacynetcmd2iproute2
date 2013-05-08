@@ -23,9 +23,14 @@ run() {
   [[ -n ${exec_flag-} ]] && { "$@" || exit $?; }
 }
 
+run_ip()
+{
+  run ip ${resolve_flag:+-r} ${af:+-f "$af"} ${ip_opts+"${ip_opts[@]}"} "$@"
+}
+
 run_ss()
 {
-  run ss ${resolve_flag+-r} "$@"
+  run ss ${resolve_flag+-r} ${ss_opts+"${ss_opts[@]}"} "$@"
 }
 
 require_value()
@@ -51,6 +56,8 @@ require_value()
 
 resolve_flag="set"
 continuous_flag=""
+run_cmd="run_ss"
+
 ss_opts=()
 
 while [[ $# -gt 0 ]]; do
@@ -113,7 +120,22 @@ while [[ $# -gt 0 ]]; do
   -c|--continuous)
     continuous_flag="set"
     ;;
-  -r|--route|-F|-C|-g|--groups|-i|--interfaces|-M|--masquerade|-s|--statistics)
+  -i|--interfaces)
+    run_cmd="run_ip"
+    ip_opts=(-s link)
+    ;;
+  -r|--route)
+    ## FIXME: Support -4 and -6 options
+    run_cmd="run_ip"
+    ip_opts=(route)
+    ;;
+  -g|--groups)
+    ## FIXME: Support -4 and -6 options
+    run_cmd="run_ip"
+    ip_opts=(maddr)
+    ;;
+  -F|-C|-M|--masquerade|-s|--statistics)
+    ## FIXME
     pdie "$opt: Not supported yet"
     ;;
   -v|--verbose|-W|--wide|--numeric-hosts|--numeric-ports|--numeric-users)
@@ -137,12 +159,12 @@ done
 
 if [[ -n ${continuous_flag-} ]] && [[ -n ${exec_flag-} ]]; then
   while :; do
-    run_ss ${ss_opts+"${ss_opts[@]}"}
+    $run_cmd
     exec_only_flag="set"
     sleep 1
   done
   exit 0
 fi
 
-run_ss ${ss_opts+"${ss_opts[@]}"}
+$run_cmd
 
