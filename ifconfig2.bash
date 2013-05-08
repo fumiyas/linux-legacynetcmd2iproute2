@@ -103,7 +103,7 @@ inet|inet6)
   af="$1"
   shift
   ;;
-unix|ax25|netrom|rose|ipx|ddp|ec|ashx25)
+unix|ax25|netrom|rose|ipx|ddp|ec|ash|x25)
   pdie "$1: Not supported"
   ;;
 esac
