@@ -11,15 +11,18 @@ Examples
 
 Show iproute2 command-line:
 
-  $ ./ifconfig2.bash
+    $ ./ifconfig2.bash <ifconfig(8)'s argument>
+    $ ./netstat2.bash <netstat(8)'s arguments>
 
 Show and run iproute2 command-line:
 
-  $ ./ifconfig2.bash --x
+    $ ./ifconfig2.bash --x <ifconfig(8)'s argument>
+    $ ./netstat2.bash --x <netstat(8)'s arguments>
 
 Run iproute2 command-line:
 
-  $ ./ifconfig2.bash --xx
+    $ ./ifconfig2.bash --xx <ifconfig(8)'s argument>
+    $ ./netstat2.bash --xx <netstat(8)'s arguments>
 
 References
 ----------------------------------------------------------------------
