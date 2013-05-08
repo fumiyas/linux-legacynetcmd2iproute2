@@ -25,12 +25,12 @@ run() {
 
 run_ip()
 {
-  run ip ${resolve_flag:+-r} ${af:+-f "$af"} ${ip_opts+"${ip_opts[@]}"} "$@"
+  run ip ${resolve_flag:+-r} "$@" ${ip_opts+"${ip_opts[@]}"}
 }
 
 run_ss()
 {
-  run ss ${resolve_flag+-r} ${ss_opts+"${ss_opts[@]}"} "$@"
+  run ss ${resolve_flag+-r} "$@" ${ss_opts+"${ss_opts[@]}"}
 }
 
 require_value()
@@ -59,6 +59,7 @@ continuous_flag=""
 run_cmd="run_ss"
 
 ss_opts=()
+common_opts=()
 
 while [[ $# -gt 0 ]]; do
   opt="$1"; shift
@@ -82,7 +83,7 @@ while [[ $# -gt 0 ]]; do
     exec_flag="set"
     exec_only_flag="set"
     ;;
-  -a|--all|-e|--extended|-o|-p|-4|-6)
+  -a|--all|-e|--extended|-o|-p)
     ss_opts[${#ss_opts[@]}]="$opt"
     ;;
   -n|--numeric)
@@ -102,20 +103,24 @@ while [[ $# -gt 0 ]]; do
     require_value "$opt" ${1+"$1"}
     arg="$1"; shift
     case "$arg" in
-    unix|inet|inet6)
+    unix)
+      ss_opts[${#ss_opts[@]}]="-f"
+      ss_opts[${#ss_opts[@]}]="$arg"
+      ;;
+    inet|inet6)
+      common_opts[${#common_opts[@]}]="-f"
+      common_opts[${#common_opts[@]}]="$arg"
       ;;
     *)
       pdie "$opt $arg: Not supported"
       ;;
     esac
-    ss_opts[${#ss_opts[@]}]="-f"
-    ss_opts[${#ss_opts[@]}]="$arg"
     ;;
-  --inet)
-    ss_opts[${#ss_opts[@]}]="-4"
+  -4|--inet)
+    common_opts[${#common_opts[@]}]="-4"
     ;;
-  --inet6)
-    ss_opts[${#ss_opts[@]}]="-6"
+  -6|--inet6)
+    common_opts[${#common_opts[@]}]="-6"
     ;;
   -c|--continuous)
     continuous_flag="set"
@@ -125,12 +130,10 @@ while [[ $# -gt 0 ]]; do
     ip_opts=(-s link)
     ;;
   -r|--route)
-    ## FIXME: Support -4 and -6 options
     run_cmd="run_ip"
     ip_opts=(route)
     ;;
   -g|--groups)
-    ## FIXME: Support -4 and -6 options
     run_cmd="run_ip"
     ip_opts=(maddr)
     ;;
@@ -157,14 +160,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -n ${continuous_flag-} ]] && [[ -n ${exec_flag-} ]]; then
-  while :; do
-    $run_cmd
-    exec_only_flag="set"
-    sleep 1
-  done
-  exit 0
-fi
+while :; do
+  $run_cmd ${common_opts+"${common_opts[@]}"}
+  run_result="$?"
+  if [[ -z ${continuous_flag-} ]] || [[ -z ${exec_flag-} ]]; then
+    exit "$run_result"
+  fi
+  exec_only_flag="set"
+  sleep 1
+done
 
-$run_cmd
+exit 0
 
