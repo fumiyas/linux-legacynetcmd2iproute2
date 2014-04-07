@@ -32,11 +32,11 @@ Run iproute2 command-line:
 
 or:
 
-    $ ln -s `pwd`/ifconfig2.bash /path/to/installdir/ifconfig
-    $ ln -s `pwd`/netstat2.bash /path/to/installdir/netstat
-    $ /path/to/installdir/ifconfig <ifconfig(8)'s arguments>
+    $ ln -s `pwd`/ifconfig2.bash /usr/local/bin/ifconfig
+    $ ln -s `pwd`/netstat2.bash /usr/local/bin/netstat
+    $ /usr/local/bin/ifconfig <ifconfig(8)'s arguments>
     ... Do ip(8) command-line ...
-    $ /path/to/installdir/netstat <netstat(8)'s arguments>
+    $ /usr/local/bin/netstat <netstat(8)'s arguments>
     ... Do ip(8) or ss(8) command-line ...
 
 TODO
