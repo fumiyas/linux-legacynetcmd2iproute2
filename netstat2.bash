@@ -2,7 +2,7 @@
 ##
 ## Convert to Linux iproute2 command-line from legacy networking command-line
 ## netstat(8) to ip(8) and ss(8) converter
-## Copyright (c) 2013 SATOH Fumiyasu @ OSS Technology Corp., Japan
+## Copyright (c) 2013-2014 SATOH Fumiyasu @ OSS Technology Corp., Japan
 ##
 ## License: GNU General Public License version 3
 ##
@@ -93,32 +93,30 @@ while [[ $# -gt 0 ]]; do
     exec_only_flag="set"
     ;;
   -a|--all|-e|--extended|-o|-p)
-    ss_opts[${#ss_opts[@]}]="$opt"
+    ss_opts+=("$opt")
     ;;
   -n|--numeric)
-    ss_opts[${#ss_opts[@]}]="$opt"
+    ss_opts+=("$opt")
     unset resolve_flag
     ;;
   --timers)
-    ss_opts[${#ss_opts[@]}]="--options"
+    ss_opts+=(--options)
     ;;
   --program)
-    ss_opts[${#ss_opts[@]}]="--process"
+    ss_opts+=(--process)
     ;;
   -t|--tcp|-u|--udp|-w|--raw|-x|--unix|-l|--listening)
-    ss_opts[${#ss_opts[@]}]="$opt"
+    ss_opts+=("$opt")
     ;;
   -A|--protocol)
     require_value "$opt" ${1+"$1"}
     arg="$1"; shift
     case "$arg" in
     unix)
-      ss_opts[${#ss_opts[@]}]="-f"
-      ss_opts[${#ss_opts[@]}]="$arg"
+      ss_opts+=(-f "$arg")
       ;;
     inet|inet6)
-      common_opts[${#common_opts[@]}]="-f"
-      common_opts[${#common_opts[@]}]="$arg"
+      common_opts+=(-f "$arg")
       ;;
     *)
       pdie "$opt $arg: Not supported"
@@ -126,10 +124,10 @@ while [[ $# -gt 0 ]]; do
     esac
     ;;
   -4|--inet)
-    common_opts[${#common_opts[@]}]="-4"
+    common_opts+=(-4)
     ;;
   -6|--inet6)
-    common_opts[${#common_opts[@]}]="-6"
+    common_opts+=(-6)
     ;;
   -c|--continuous)
     continuous_flag="set"
