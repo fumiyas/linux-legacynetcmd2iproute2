@@ -1,7 +1,7 @@
-Convert to Linux iproute2 command-line from legacy networking command-line
+Generate Linux iproute command-line from legacy net-tools command-line
 ======================================================================
 
-  * Copyright: (c) 2013 SATOH Fumiyasu @ OSS Technology Corp., Japan
+  * Copyright: (c) 2013-2015 SATOH Fumiyasu @ OSS Technology Corp., Japan
   * License: GNU General Public License version 3
   * URL: <https://github.com/fumiyas/linux-legacynetcmd2iproute2>
   * Home: <http://fumiyas.github.io/>
