@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 ##
 ## Generate Linux iproute command-line from legacy net-tools command-line
 ## ifconfig(8) to ip(8) converter
@@ -19,8 +19,8 @@ pdie() {
 }
 
 run() {
-  [[ -z ${exec_only_flag-} ]] && echo "$@"
-  [[ -n ${exec_flag-} ]] && { "$@" || exit $?; }
+  [ -z "${exec_only_flag-}" ] && echo "$@"
+  [ -n "${exec_flag-}" ] && { "$@" || exit $?; }
 }
 
 run_ip()
@@ -32,18 +32,8 @@ require_value()
 {
   local name="$1"; shift
 
-  if [[ $# -eq 0 ]]; then
+  if [ $# -eq 0 ]; then
     pdie "$name: Requires value"
-  fi
-
-  local value="$1"; shift
-
-  if [[ $# -gt 0 ]]; then
-    if [[ $value =~ $1 ]]; then
-      : OK
-    else
-      pdie "$name: Invalid value: $value"
-    fi
   fi
 }
 
@@ -51,7 +41,7 @@ require_value()
 
 resolve_flag=""
 
-case "${0%.bash}" in
+case "${0%.sh}" in
 *2)
   ;;
 *)
@@ -60,7 +50,7 @@ case "${0%.bash}" in
   ;;
 esac
 
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
   case "${1-}" in
   --x)
     exec_flag="set"
@@ -86,14 +76,14 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ $# -eq 0 ]]; then
+if [ $# -eq 0 ]; then
   run ip address
   exit $?
 fi
 
 if="${1-}"; shift
 
-if [[ $# -eq 0 ]]; then
+if [ $# -eq 0 ]; then
   run ip address show dev "$if"
   exit $?
 fi
@@ -108,7 +98,7 @@ unix|ax25|netrom|rose|ipx|ddp|ec|ash|x25)
   ;;
 esac
 
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
   cmd="$1"; shift
   case "$cmd" in
   up)
@@ -174,7 +164,7 @@ while [[ $# -gt 0 ]]; do
   hw)
     require_value "$cmd" ${1+"$1"}
     arg="$1"; shift
-    if [[ $cmd != ether ]]; then
+    if [ X"$cmd" != X"ether" ]; then
       pdie "$cmd: $arg: Not supported"
     fi
     require_value "$cmd: $arg" ${1+"$1"}
@@ -188,8 +178,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -n ${addr-} ]]; then
-  if [[ -z ${netmask-} ]]; then
+if [ -n "${addr-}" ]; then
+  if [ -z "${netmask-}" ]; then
     run_ip address add "$addr" dev "$if"
   else
     run_ip address add "${addr%%/*}/$netmask" dev "$if"

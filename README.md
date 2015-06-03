@@ -11,28 +11,28 @@ Examples
 
 Show iproute2 command-line:
 
-    $ ./ifconfig2.bash <ifconfig(8)'s arguments>
+    $ ./ifconfig2.sh <ifconfig(8)'s arguments>
     ... Show ip(8) command-line ...
     $ ./netstat2.bash <netstat(8)'s arguments>
     ... Show ip(8) or ss(8) command-line ...
 
 Show and run iproute2 command-line:
 
-    $ ./ifconfig2.bash --x <ifconfig(8)'s arguments>
+    $ ./ifconfig2.sh --x <ifconfig(8)'s arguments>
     ... Show and do ip(8) command-line ...
     $ ./netstat2.bash --x <netstat(8)'s arguments>
     ... Show and do ip(8) or ss(8) command-line ...
 
 Run iproute2 command-line:
 
-    $ ./ifconfig2.bash --xx <ifconfig(8)'s arguments>
+    $ ./ifconfig2.sh --xx <ifconfig(8)'s arguments>
     ... Do ip(8) command-line ...
     $ ./netstat2.bash --xx <netstat(8)'s arguments>
     ... Do ip(8) or ss(8) command-line ...
 
 or:
 
-    $ sudo install -m 0755 ifconfig2.bash /usr/local/sbin/ifconfig
+    $ sudo install -m 0755 ifconfig2.sh /usr/local/sbin/ifconfig
     $ sudo install -m 0755 netstat2.bash /usr/local/bin/netstat
     $ /usr/local/sbin/ifconfig <ifconfig(8)'s arguments>
     ... Do ip(8) command-line ...
