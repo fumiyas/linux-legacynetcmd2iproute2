@@ -45,6 +45,10 @@ case "${0%.sh}" in
 *2)
   ;;
 *)
+  if [ -x /sbin/ifconfig ]; then
+    exec /sbin/ifconfig "$@"
+    exit $?
+  fi
   exec_flag="set"
   exec_only_flag="set"
   ;;
