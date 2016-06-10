@@ -65,6 +65,10 @@ case "${0%.bash}" in
 *2)
   ;;
 *)
+  if [ -x /bin/netstat ]; then
+    exec /bin/netstat "$@"
+    exit $?
+  fi
   exec_flag="set"
   exec_only_flag="set"
   ;;
