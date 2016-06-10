@@ -2,7 +2,7 @@
 ##
 ## Generate Linux iproute command-line from legacy net-tools command-line
 ## netstat(8) to ip(8) and ss(8) converter
-## Copyright (c) 2013-2015 SATOH Fumiyasu @ OSS Technology Corp., Japan
+## Copyright (c) 2013-2016 SATOH Fumiyasu @ OSS Technology Corp., Japan
 ##
 ## License: GNU General Public License version 3
 ##
