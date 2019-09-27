@@ -45,7 +45,7 @@ case "${0%.sh}" in
 *2)
   ;;
 *)
-  if [ -x /sbin/ifconfig ]; then
+  if [ -z "${IFCONFIG2_FORCE_RUN+set}" ] && [ -x /sbin/ifconfig ]; then
     exec /sbin/ifconfig "$@"
     exit $?
   fi
