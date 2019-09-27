@@ -15,7 +15,7 @@ perr() {
 
 pdie() {
   perr "$1"
-  exit ${2-1}
+  exit "${2-1}"
 }
 
 run() {
