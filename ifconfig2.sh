@@ -2,9 +2,9 @@
 ##
 ## Generate Linux iproute command-line from legacy net-tools command-line
 ## ifconfig(8) to ip(8) converter
-## Copyright (c) 2013-2019 SATOH Fumiyasu @ OSS Technology Corp., Japan
 ##
-## License: GNU General Public License version 3
+## SPDX-FileCopyrightText: 2013-2025 SATOH Fumiyasu @ OSSTech Corp., Japan
+## SPDX-License-Identifier: GPL-3.0-or-later
 ##
 
 set -u
