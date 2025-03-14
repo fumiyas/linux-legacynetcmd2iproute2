@@ -30,6 +30,7 @@ run_ip()
 
 require_value()
 {
+  # shellcheck disable=SC3043 # In POSIX sh, 'local' is undefined
   local name="$1"; shift
 
   if [ $# -eq 0 ]; then
@@ -189,4 +190,3 @@ if [ -n "${addr-}" ]; then
     run_ip address add "${addr%%/*}/$netmask" dev "$if"
   fi
 fi
-
